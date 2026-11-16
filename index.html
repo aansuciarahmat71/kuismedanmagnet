@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>Kuis Kemagnetan · Lab Maya Fisika</title>
+<style>
+:root{--bg:#f3f5fa;--card:#fff;--panel:#eef1f8;--line:#dde2ee;--ink:#1b2133;--ink2:#5e6680;--ink3:#8d95ad;--ac:#d97706;--acd:#a85a04;--acs:rgba(217,119,6,.12);--ok:#1f9d6c;--oks:rgba(31,157,108,.13);--bad:#d6453f;--bads:rgba(214,69,63,.1);--r:18px;--f:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input{font-family:inherit}[hidden]{display:none!important}
+header{display:flex;align-items:center;gap:12px;padding:10px 18px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;flex-wrap:wrap}
+.logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(155deg,#d6432f 48%,#8b93a6 52%);flex:none}
+.brand small{display:block;font-size:12px;color:var(--acd);font-weight:600}.brand b{font-size:18px}
+.sp{flex:1}.chip{font:600 13px ui-monospace,Menlo,Consolas,monospace;padding:6px 12px;border:1px solid var(--line);border-radius:99px;background:var(--panel);color:var(--ink2)}
+.chip.warn{background:var(--bads);color:var(--bad);border-color:var(--bad)}
+main{max-width:980px;margin:0 auto;padding:18px 14px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;margin-bottom:16px}
+@media(max-width:560px){.card{padding:16px 14px}}
+h2{margin:0 0 6px;font-size:24px}h3{margin:0 0 8px;font-size:17px}p{margin:0 0 10px;color:var(--ink2)}
+.rule{background:var(--acs);border-left:4px solid var(--ac);border-radius:10px;padding:12px 16px;font-size:14px;margin:12px 0}
+.rule ul{margin:0;padding-left:18px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+@media(max-width:560px){.fields{grid-template-columns:1fr}}
+label{font-size:12px;font-weight:700;color:var(--ink2);display:block;margin-bottom:4px}
+input[type=text]{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:11px;background:var(--panel);font-size:15px}
+input:focus{outline:none;border-color:var(--ac)}
+.btn{padding:12px 22px;border:0;border-radius:12px;background:var(--ac);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
+.btn:hover{background:var(--acd)}.btn.g{background:transparent;color:var(--ink2);border:1px solid var(--line)}.btn.g:hover{background:var(--panel)}
+.btn.ok{background:var(--ok)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.segs{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.segs span{font-size:12.5px;background:var(--panel);border:1px solid var(--line);border-radius:99px;padding:4px 11px;color:var(--ink2)}
+.qwrap{display:grid;grid-template-columns:1fr 280px;gap:16px;align-items:start}
+@media(max-width:820px){.qwrap{grid-template-columns:1fr}}
+.seg{font-size:12.5px;font-weight:700;color:var(--acd);background:var(--acs);padding:4px 11px;border-radius:99px;display:inline-block}
+.tp{font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px;border:1px solid var(--line);color:var(--ink2);margin-left:6px}
+.qno{font-size:22px;font-weight:800;margin:10px 0 6px}.stem{font-size:16px;margin:0 0 14px}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;padding:12px 14px;margin-bottom:9px;border:2px solid var(--line);border-radius:14px;background:var(--card);font-size:15px;cursor:pointer;color:var(--ink)}
+.opt:hover{border-color:var(--ac);background:var(--acs)}.opt.sel{border-color:var(--ac);background:var(--acs)}
+.opt i{flex:none;width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;font:700 13px var(--f);display:flex;align-items:center;justify-content:center;font-style:normal}
+.opt.sel i{background:var(--ac)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:14px;flex-wrap:wrap}
+.side h4{margin:12px 0 6px;font-size:12.5px;color:var(--ink2)}.side h4:first-child{margin-top:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(42px,1fr));gap:7px}
+.tile{aspect-ratio:1;border:2px solid var(--line);border-radius:10px;background:var(--card);font-weight:700;font-size:14px;cursor:pointer;color:var(--ink)}
+.tile.ans{background:var(--oks);border-color:var(--ok);color:#13704c}.tile.cur{outline:3px solid var(--ac);outline-offset:1px}
+.big{text-align:center;padding:10px 0 4px}.big .n{font-size:64px;font-weight:800;color:var(--acd);line-height:1}.big .m{font-size:15px;color:var(--ink2);margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left}th{font-size:12px;color:var(--ink2);background:var(--panel)}
+td.c,th.c{text-align:center}tr.tot td{font-weight:800;background:var(--acs)}
+.bar{height:9px;background:var(--panel);border-radius:9px;overflow:hidden;min-width:70px}.bar b{display:block;height:100%;background:var(--ok)}
+.acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+#msg{margin-top:12px;padding:11px 14px;border-radius:11px;font-size:14px;background:var(--panel)}
+.rv{border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px;font-size:14px}
+.rv.ok{border-left:5px solid var(--ok)}.rv.no{border-left:5px solid var(--bad)}.rv .e{margin-top:6px;padding:8px 10px;background:var(--panel);border-radius:9px;color:var(--ink2)}
+.tp.tka{background:var(--acs);color:var(--acd);border-color:var(--ac)}
+.tf{width:44px;height:38px;border:2px solid var(--line);border-radius:10px;background:var(--card);font-weight:800;cursor:pointer;color:var(--ink)}.tf.sel{background:var(--ac);border-color:var(--ac);color:#fff}
+.opt.mk i{border-radius:7px}
+.narr{font-size:13.5px;color:#5c3a05;background:#fff6e5;border-left:4px solid var(--ac);padding:9px 12px;border-radius:8px;margin:0 0 8px;line-height:1.5}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px;margin:0 0 10px;overflow-x:auto}.fig svg{width:100%;height:auto;max-height:230px;display:block}
+@media(max-width:600px){
+header{padding:6px 10px;gap:6px}.logo{width:26px;height:26px;border-radius:8px}.brand small{display:none}.brand b{font-size:14px}
+.chip{font-size:11.5px;padding:3px 8px}#cName{max-width:42vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+main{padding:8px 8px 22px}.card{padding:12px;margin-bottom:10px;border-radius:14px}
+h2{font-size:20px}h3{font-size:15px}p{font-size:13.5px;margin-bottom:8px}.rule{font-size:12.5px;padding:8px 10px}.fields{gap:8px;margin:10px 0}
+.segs span{font-size:11.5px;padding:3px 9px}.seg,.tp{font-size:11.5px}
+.qno{font-size:17px;margin:6px 0 4px}.stem{font-size:14.5px;margin-bottom:9px}.narr{font-size:12.5px;padding:7px 9px}.fig svg{max-height:185px}
+.opt{padding:8px 10px;font-size:14px;gap:9px;margin-bottom:6px;border-radius:11px}.opt i{width:22px;height:22px;font-size:12px}
+.tf{width:38px;height:34px}.nav{margin-top:8px;flex-wrap:nowrap}.nav .btn{flex:1;padding:10px 8px;font-size:14px}
+.grid{grid-template-columns:repeat(auto-fill,minmax(33px,1fr));gap:5px}.tile{font-size:12px;border-radius:8px}.side h4{font-size:11px;margin:7px 0 4px}
+.big .n{font-size:46px}table{font-size:12.5px}th,td{padding:6px 5px}
+.acts .btn{flex:1 1 45%;padding:10px 6px;font-size:13px}.btn{font-size:14px}
+}
+@media print{header,.acts,#msg,#btnrv,.noprint{display:none!important}body{background:#fff}.card{border:0;padding:0}.rv{break-inside:avoid}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"></div>
+  <div class="brand"><small>Lab Maya · Fisika Kelas XII</small><b>Kuis Kemagnetan</b></div>
+  <div class="sp"></div>
+  <span class="chip" id="cName" hidden></span>
+  <span class="chip" id="cProg" hidden></span>
+  <span class="chip" id="cTime" hidden>⏱ 75:00</span>
+</header>
+<main>
+
+<section id="sStart" class="card">
+  <h2>Kuis Kemagnetan</h2>
+  <p>30 soal pilihan ganda: <b>15 soal hitungan</b> dan <b>15 soal konsep</b>, dibagi menjadi 6 submateri, termasuk <b>5 soal bergaya TKA</b>.</p>
+  <div class="segs" id="segList"></div>
+  <div class="fields">
+    <div><label for="iNama">NAMA LENGKAP</label><input type="text" id="iNama" autocomplete="off"></div>
+    <div><label for="iKelas">KELAS</label><input type="text" id="iKelas" placeholder="contoh: XII-3" autocomplete="off"></div>
+  </div>
+  <div class="rule"><ul>
+    <li>Waktu mengerjakan <b id="durTxt">75</b> menit. Saat waktu habis, jawaban dikumpulkan otomatis.</li>
+    <li>Soal bergaya TKA: <b>pilihan ganda kompleks</b> (pilih lebih dari satu jawaban) dan <b>pernyataan Benar/Salah</b>. Soal ini dinilai benar bila <b>semua</b> pilihan tepat.</li>
+    <li>Pada soal biasa, pilih satu jawaban; kamu bisa berpindah soal dan mengubah jawaban sebelum menekan <b>Selesai</b>.</li>
+    <li>Gunakan μ₀ = 4π × 10⁻⁷ T·m/A. Kerjakan hitungan di kertas coret-coretan.</li>
+    <li>Setelah selesai, kamu mendapat rekap skor per submateri dan total, yang bisa diunduh dan diserahkan ke guru. Pembahasan soal khusus untuk guru.</li>
+  </ul></div>
+  <button class="btn" id="bStart">Mulai Kuis</button>
+</section>
+
+<section id="sQuiz" hidden>
+  <div class="qwrap">
+    <div class="card">
+      <span class="seg" id="qSeg"></span><span class="tp" id="qTp"></span><span class="tp tka" id="qTka" hidden></span>
+      <div class="qno" id="qNo"></div>
+      <div id="qStim"></div>
+      <p class="stem" id="qStem" style="color:var(--ink)"></p>
+      <div id="qOpts"></div>
+      <div class="nav">
+        <button class="btn g" id="bPrev">← Sebelumnya</button>
+        <button class="btn" id="bNext">Berikutnya →</button>
+        <button class="btn ok" id="bFin" hidden>Selesai ✓</button>
+      </div>
+    </div>
+    <div class="card side" id="side"></div>
+  </div>
+  <div style="text-align:center"><button class="btn ok" id="bFin2">Selesai &amp; Kumpulkan</button></div>
+</section>
+
+<section id="sRes" hidden>
+  <div class="card">
+    <div class="big"><div class="n" id="rTot"></div><div class="m" id="rMsg"></div></div>
+    <p id="rId" style="text-align:center"></p>
+    <table id="rTab"></table>
+    <div class="acts">
+      <button class="btn" id="bPdf">⬇ Unduh Rekap (PDF)</button>
+      <button class="btn g" id="bTxt">⬇ Unduh (.txt)</button>
+      <button class="btn ok" id="bSend">📤 Serahkan ke Guru</button>
+      <button class="btn g" id="btnrv">🔒 Pembahasan (Guru)</button>
+    </div>
+    <div id="msg" hidden></div>
+  </div>
+  <div class="card" id="rvBox" hidden><h3>Pembahasan</h3><div id="rv"></div></div>
+</section>
+
+</main>
+<script>
+/* ===== PENGATURAN GURU ===== */
+var DURASI_MENIT = 75;                 // waktu pengerjaan
+var GAS_URL = "";                      // URL Web App Google Apps Script (kosongkan bila belum ada)
+
+/* ===== BANK SOAL ===== (jawaban benar selalu ditulis pertama, urutan opsi diacak otomatis) */
+var S = [
+["Magnet, Kutub & Garis Gaya",[
+ ["k","Kutub utara magnet A didekatkan dengan kutub utara magnet B. Apa yang terjadi?",["Tolak-menolak, karena kutub senama","Tarik-menarik, karena kutub senama","Tarik-menarik, karena sama-sama kutub utara","Tidak ada gaya, karena magnet bersifat netral"],"Kutub senama tolak-menolak, kutub berlainan tarik-menarik."],
+ ["k","Perhatikan pernyataan tentang garis gaya magnet di sekitar magnet batang. Pernyataan yang benar adalah ...",["Di luar magnet, garis gaya keluar dari kutub utara dan masuk ke kutub selatan","Garis gaya magnet dapat berpotongan di dekat kutub","Garis gaya yang rapat menunjukkan medan magnet yang kuat","Di luar magnet, garis gaya berarah dari kutub selatan ke kutub utara"],"Garis gaya tidak pernah berpotongan. Di luar magnet arahnya U → S, dan kerapatan garis menggambarkan kuat medan.",{m:"c",c:[0,2],n:"Dalam praktikum, Rani meletakkan selembar kertas di atas sebuah magnet batang, lalu menaburkan serbuk besi secara merata dan mengetuk kertas perlahan. Serbuk besi tersusun membentuk pola garis lengkung yang menghubungkan kedua kutub; polanya sangat rapat di dekat kutub dan makin renggang di tempat yang jauh dari magnet. Rani juga menaruh beberapa jarum kompas kecil di sekitar magnet dan mencatat arah yang ditunjuk kutub utara jarum. Gambar berikut memperlihatkan pola yang ia amati.",f:"<svg viewBox=\"0 0 320 162\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M108,80 C 90,40 230,40 212,80\" fill=\"none\" stroke=\"#2f6fb5\" stroke-width=\"1.6\"/><path d=\"M108,80 C 90,40 230,40 212,80\" fill=\"none\" stroke=\"#2f6fb5\" stroke-width=\"1.6\" transform=\"translate(0,160) scale(1,-1)\"/><path d=\"M108,80 C 60,5 260,5 212,80\" fill=\"none\" stroke=\"#2f6fb5\" stroke-width=\"1.6\"/><path d=\"M108,80 C 60,5 260,5 212,80\" fill=\"none\" stroke=\"#2f6fb5\" stroke-width=\"1.6\" transform=\"translate(0,160) scale(1,-1)\"/><polygon points=\"154,45 166,50 154,55\" fill=\"#2f6fb5\"/><polygon points=\"154,19 166,24 154,29\" fill=\"#2f6fb5\"/><polygon points=\"154,105 166,110 154,115\" fill=\"#2f6fb5\"/><polygon points=\"154,131 166,136 154,141\" fill=\"#2f6fb5\"/><rect x=\"110\" y=\"70\" width=\"50\" height=\"20\" fill=\"#d6432f\"/><rect x=\"160\" y=\"70\" width=\"50\" height=\"20\" fill=\"#8b93a6\"/><text x=\"135\" y=\"85\" font-size=\"12\" text-anchor=\"middle\" fill=\"#fff\" font-weight=\"700\" font-family=\"Segoe UI,Arial,sans-serif\">U</text><text x=\"185\" y=\"85\" font-size=\"12\" text-anchor=\"middle\" fill=\"#fff\" font-weight=\"700\" font-family=\"Segoe UI,Arial,sans-serif\">S</text><text x=\"160\" y=\"157\" font-size=\"10\" text-anchor=\"middle\" fill=\"#5e6680\" font-family=\"Segoe UI,Arial,sans-serif\">Pola serbuk besi di sekitar magnet batang</text></svg>"}],
+ ["k","Pada gambar garis gaya magnet, daerah dengan garis paling rapat menunjukkan ...",["medan magnet paling kuat","medan magnet paling lemah","tidak ada medan magnet","arah medan berbalik"],"Kerapatan garis gaya menggambarkan kuat medan magnet; paling rapat di dekat kutub."],
+ ["k","Sebuah magnet batang dipotong menjadi dua bagian. Hasilnya ...",["dua magnet utuh, masing-masing punya kutub utara dan selatan","satu bagian kutub utara saja dan satu bagian kutub selatan saja","dua bagian yang kehilangan sifat magnet","magnet monopol dan benda netral"],"Kutub magnet tidak dapat dipisahkan; setiap potongan tetap menjadi magnet dengan dua kutub."]
+]],
+["Medan Magnet Kawat Lurus Berarus",[
+ ["h","Kawat lurus panjang dialiri arus 5 A. Kuat medan magnet pada titik berjarak 10 cm dari kawat adalah ...",["1 × 10⁻⁵ T","2 × 10⁻⁵ T","5 × 10⁻⁶ T","1 × 10⁻⁶ T"],"B = μ₀I/(2πa) = (2×10⁻⁷)(5)/(0,1) = 1×10⁻⁵ T."],
+ ["h","Kawat lurus dialiri arus 4 A. Kuat medan magnet pada titik berjarak 2 cm dari kawat adalah ...",["4 × 10⁻⁵ T","8 × 10⁻⁵ T","4 × 10⁻⁶ T","2 × 10⁻⁵ T"],"B = (2×10⁻⁷)(4)/(0,02) = 4×10⁻⁵ T."],
+ ["h","Kawat lurus panjang dialiri arus 10 A. Tentukan setiap pernyataan berikut tentang medan magnet di titik berjarak 5 cm dari kawat, benar atau salah.",["Kuat medan magnet di titik itu 4 × 10⁻⁵ T.","Jika jarak titik dijadikan 10 cm, kuat medan magnetnya menjadi 2 × 10⁻⁵ T.","Jika arus dijadikan 20 A pada jarak tetap, kuat medan magnetnya tetap 4 × 10⁻⁵ T."],"B = μ₀I/(2πa) = (2×10⁻⁷)(10)/(0,05) = 4×10⁻⁵ T (Benar). Jarak 2 kali → B ½ kali = 2×10⁻⁵ T (Benar). Arus 2 kali → B 2 kali = 8×10⁻⁵ T (Salah).",{m:"b",c:[true,true,false],n:"Sebuah kawat lurus panjang dialiri arus tetap 10 A. Tim peneliti menggeser sensor medan magnet (teslameter) menjauhi kawat, lalu mencatat kuat medan magnet B pada beberapa jarak a. Hasilnya digambarkan pada grafik berikut: makin jauh sensor dari kawat, makin kecil B yang terbaca. Gunakan μ₀ = 4π × 10⁻⁷ T·m/A.",f:"<svg viewBox=\"0 0 320 172\" xmlns=\"http://www.w3.org/2000/svg\"><line x1=\"40\" y1=\"140\" x2=\"305\" y2=\"140\" stroke=\"#dde2ee\"/><text x=\"34\" y=\"144\" font-size=\"10\" text-anchor=\"end\" fill=\"#5e6680\" font-family=\"Segoe UI,Arial,sans-serif\">0</text><line x1=\"40\" y1=\"110\" x2=\"305\" y2=\"110\" stroke=\"#dde2ee\"/><text x=\"34\" y=\"114\" font-size=\"10\" text-anchor=\"end\" fill=\"#5e6680\" font-family=\"Segoe UI,Arial,sans-serif\">2</text><line x1=\"40\" y1=\"80\" x2=\"305\" y2=\"80\" stroke=\"#dde2ee\"/><text x=\"34\" y=\"84\" font-size=\"10\" text-anchor=\"end\" fill=\"#5e6680\" font-family=\"Segoe UI,Arial,sans-serif\">4</text><line x1=\"40\" y1=\"50\" x2=\"305\" y2=\"50\" stroke=\"#dde2ee\"/><text x=\"34\" y=\"54\" font-size=\"10\" text-anchor=\"end\" fill=\"#5e6680\" font-family=\"Segoe UI,Arial,sans-serif\">6</text><line x1=\"40\" y1=\"20\" x2=\"305\" y2=\"20\" stroke=\"#dde2ee\"/><text x=\"34\" y=\"24\" font-size=\"10\" text-anchor=\"end\" fill=\"#5e6680\" font-family=\"Segoe UI,Arial,sans-serif\">8</text><text x=\"40\" y=\"154\" font-size=\"10\" text-anchor=\"middle\" fill=\"#5e6680\" font-family=\"Segoe UI,Arial,sans-serif\">0</text><text x=\"105\" y=\"154\" font-size=\"10\" text-anchor=\"middle\" fill=\"#5e6680\" font-family=\"Segoe UI,Arial,sans-serif\">5</text><text x=\"170\" y=\"154\" font-size=\"10\" text-anchor=\"middle\" fill=\"#5e6680\" font-family=\"Segoe UI,Arial,sans-serif\">10</text><text x=\"235\" y=\"154\" font-size=\"10\" text-anchor=\"middle\" fill=\"#5e6680\" font-family=\"Segoe UI,Arial,sans-serif\">15</text><text x=\"300\" y=\"154\" font-size=\"10\" text-anchor=\"middle\" fill=\"#5e6680\" font-family=\"Segoe UI,Arial,sans-serif\">20</text><line x1=\"40\" y1=\"140\" x2=\"305\" y2=\"140\" stroke=\"#1b2133\"/><line x1=\"40\" y1=\"12\" x2=\"40\" y2=\"140\" stroke=\"#1b2133\"/><polyline fill=\"none\" stroke=\"#d97706\" stroke-width=\"2.4\" points=\"72.5,20 79,40 85.5,54.2857 92,65 105,80 118,90 131,97.1429 144,102.5 170,110 196,115 235,120 300,125\"/><circle cx=\"72.5\" cy=\"20\" r=\"3.6\" fill=\"#d6432f\"/><text x=\"80.5\" y=\"15\" font-size=\"10\" text-anchor=\"start\" fill=\"#d6432f\" font-weight=\"700\" font-family=\"Segoe UI,Arial,sans-serif\">8</text><circle cx=\"105\" cy=\"80\" r=\"3.6\" fill=\"#d6432f\"/><text x=\"113\" y=\"75\" font-size=\"10\" text-anchor=\"start\" fill=\"#d6432f\" font-weight=\"700\" font-family=\"Segoe UI,Arial,sans-serif\">4</text><circle cx=\"170\" cy=\"110\" r=\"3.6\" fill=\"#d6432f\"/><text x=\"178\" y=\"105\" font-size=\"10\" text-anchor=\"start\" fill=\"#d6432f\" font-weight=\"700\" font-family=\"Segoe UI,Arial,sans-serif\">2</text><circle cx=\"300\" cy=\"125\" r=\"3.6\" fill=\"#d6432f\"/><text x=\"308\" y=\"120\" font-size=\"10\" text-anchor=\"start\" fill=\"#d6432f\" font-weight=\"700\" font-family=\"Segoe UI,Arial,sans-serif\">1</text><text x=\"172\" y=\"167\" font-size=\"10\" text-anchor=\"middle\" fill=\"#5e6680\" font-family=\"Segoe UI,Arial,sans-serif\">jarak dari kawat, a (cm)</text><text transform=\"rotate(-90 12 76)\" x=\"12\" y=\"76\" font-size=\"10\" text-anchor=\"middle\" fill=\"#5e6680\" font-family=\"Segoe UI,Arial,sans-serif\">B (×10⁻⁵ T)</text></svg>"}],
+ ["k","Kawat lurus tegak dialiri arus ke atas. Titik P berada di sebelah kanan kawat (dilihat dari depan). Arah medan magnet di P adalah ...",["masuk bidang (menjauhi pengamat)","keluar bidang (mendekati pengamat)","ke atas, sejajar kawat","ke kanan, menjauhi kawat"],"Kaidah tangan kanan: ibu jari ke atas (arah arus), lipatan jari melingkar; di sisi kanan kawat lipatan jari menembus bidang masuk."],
+ ["k","Jarak sebuah titik dari kawat lurus berarus dijadikan dua kali semula, arus tetap. Kuat medan magnet di titik itu menjadi ...",["½ kali semula","2 kali semula","¼ kali semula","tetap"],"B ∝ 1/a, sehingga a dua kali membuat B menjadi ½ kali."]
+]],
+["Kawat Melingkar & Busur",[
+ ["h","Kawat melingkar satu lilitan berjari-jari 10 cm dialiri arus 5 A. Kuat medan magnet di pusat lingkaran adalah ...",["π × 10⁻⁵ T","2π × 10⁻⁵ T","π × 10⁻⁶ T","4π × 10⁻⁵ T"],"B = μ₀I/(2a) = (4π×10⁻⁷)(5)/(0,2) = π×10⁻⁵ T."],
+ ["h","Kumparan melingkar 25 lilitan berjari-jari 10 cm dialiri arus 2 A. Kuat medan magnet di pusatnya adalah ...",["π × 10⁻⁴ T","2π × 10⁻⁴ T","π × 10⁻⁵ T","4π × 10⁻⁴ T"],"B = μ₀NI/(2a) = (4π×10⁻⁷)(25)(2)/(0,2) = π×10⁻⁴ T."],
+ ["h","Kawat berbentuk busur seperempat lingkaran (θ = 90°) berjari-jari 10 cm dialiri arus 10 A. Kuat medan magnet di pusat busur adalah ...",["5π × 10⁻⁶ T","10π × 10⁻⁶ T","2,5π × 10⁻⁶ T","20π × 10⁻⁶ T"],"B = μ₀Iθ/(4πa) = (10⁻⁷)(10)(π/2)/(0,1) = 5π×10⁻⁶ T."],
+ ["k","Arus pada kawat melingkar mengalir searah jarum jam (dilihat dari depan). Arah medan magnet di pusat lingkaran adalah ...",["masuk bidang (menjauhi pengamat)","keluar bidang (mendekati pengamat)","ke kanan, sejajar bidang","ke atas, sejajar bidang"],"Lipatan jari tangan kanan mengikuti arus searah jarum jam, maka ibu jari (arah medan di pusat) menembus bidang masuk."],
+ ["k","Agar medan magnet di pusat kumparan melingkar bertambah besar, cara yang benar adalah ...",["menambah jumlah lilitan dan memperkecil jari-jari","mengurangi jumlah lilitan dan memperbesar jari-jari","memperkecil arus dan memperbesar jari-jari","memperbesar jari-jari tanpa mengubah yang lain"],"B = μ₀NI/(2a): B naik bila N dan I naik, atau a mengecil."]
+]],
+["Solenoida & Toroida",[
+ ["h","Solenoida 300 lilitan, panjang 25 cm, dialiri arus 3 A. Kuat medan magnet di dalamnya adalah ...",["1,44π × 10⁻³ T","0,72π × 10⁻³ T","2,88π × 10⁻³ T","1,44π × 10⁻⁴ T"],"B = μ₀NI/L = (4π×10⁻⁷)(300)(3)/(0,25) = 1,44π×10⁻³ T."],
+ ["h","Solenoida panjang 50 cm dengan 1000 lilitan menghasilkan B = 8π × 10⁻³ T di dalamnya. Arus yang mengalir adalah ...",["10 A","5 A","20 A","1 A"],"I = BL/(μ₀N) = (8π×10⁻³)(0,5)/((4π×10⁻⁷)(1000)) = 10 A."],
+ ["h","Toroida 400 lilitan berjari-jari rata-rata 20 cm dialiri arus 5 A. Kuat medan magnet di dalam teras toroida adalah ...",["2 × 10⁻³ T","4 × 10⁻³ T","1 × 10⁻³ T","2 × 10⁻⁴ T"],"B = μ₀NI/(2πr) = (2×10⁻⁷)(400)(5)/(0,2) = 2×10⁻³ T."],
+ ["k","Panjang solenoida diperbesar, sedangkan arus dan jumlah lilitan tetap. Kuat medan magnet di dalamnya ...",["mengecil","membesar","tidak berubah","menjadi nol"],"B = μ₀NI/L, sehingga B berbanding terbalik dengan L (lilitan makin renggang)."],
+ ["k","Perhatikan pernyataan tentang solenoida dan toroida berikut. Pernyataan yang benar adalah ...",["Medan magnet toroida terkurung di dalam teras berbentuk cincin","Medan magnet di dalam solenoida panjang hampir seragam","Medan magnet di luar toroida sangat besar","Kuat medan magnet solenoida tidak bergantung pada jumlah lilitan"],"Toroida: medan terkurung di dalam teras, hampir nol di luar. Solenoida panjang: medan di dalam hampir seragam dan B = μ₀NI/L bergantung pada N.",{m:"c",c:[0,1],n:"Seorang siswa membandingkan solenoida panjang dan toroida yang sama-sama memiliki 200 lilitan dan dialiri arus 2 A. Sensor medan magnet digeser ke beberapa posisi: di dalam lilitan (ujung kiri, tengah, ujung kanan) dan di luar, tepat di samping lilitan. Pada percobaan lanjutan, jumlah lilitan digandakan menjadi 400 dengan arus dan ukuran tetap. Data pengukuran disajikan pada tabel berikut.",f:"<table style=\"font-size:12px;margin:0\"><tr><th>Posisi sensor</th><th class=\"c\">Solenoida</th><th class=\"c\">Toroida</th></tr><tr><td>Dalam, dekat ujung kiri</td><td class=\"c\">2,49 mT</td><td class=\"c\">0,80 mT</td></tr><tr><td>Dalam, bagian tengah</td><td class=\"c\">2,51 mT</td><td class=\"c\">0,80 mT</td></tr><tr><td>Dalam, dekat ujung kanan</td><td class=\"c\">2,49 mT</td><td class=\"c\">0,80 mT</td></tr><tr><td>Luar, tepat di samping lilitan</td><td class=\"c\">0,03 mT</td><td class=\"c\">≈ 0 mT</td></tr><tr><td>Lilitan digandakan (400), bagian tengah</td><td class=\"c\">5,03 mT</td><td class=\"c\">1,60 mT</td></tr></table>"}]
+]],
+["Gaya Lorentz",[
+ ["h","Kawat sepanjang 0,5 m dialiri arus 4 A dan tegak lurus medan magnet 0,2 T. Gaya Lorentz pada kawat adalah ...",["0,4 N","0,8 N","0,2 N","1,6 N"],"F = BIL sin 90° = (0,2)(4)(0,5) = 0,4 N."],
+ ["h","Kawat 40 cm dialiri arus 5 A berada dalam medan 0,5 T dan membentuk sudut 30° terhadap medan. Gaya Lorentz pada kawat adalah ...",["0,5 N","1,0 N","0,25 N","0,87 N"],"F = BIL sin θ = (0,5)(5)(0,4)(½) = 0,5 N."],
+ ["h","Muatan 2 μC bergerak dengan kecepatan 5 × 10³ m/s tegak lurus medan magnet 0,4 T. Tentukan setiap pernyataan berikut benar atau salah.",["Gaya Lorentz pada muatan sebesar 4 × 10⁻³ N.","Jika kecepatan muatan dibuat sejajar medan magnet, gaya Lorentz menjadi maksimum.","Jika kecepatan muatan dijadikan 2 kali semula (tetap tegak lurus medan), gaya Lorentz menjadi 8 × 10⁻³ N."],"F = qvB = (2×10⁻⁶)(5×10³)(0,4) = 4×10⁻³ N (Benar). Sejajar medan (θ = 0°) → F = 0 (Salah). v 2 kali → F 2 kali = 8×10⁻³ N (Benar).",{m:"b",c:[true,false,true],n:"Di dalam tabung hampa, sebuah partikel bermuatan positif 2 μC ditembakkan mendatar ke kanan dengan kecepatan 5 × 10³ m/s menuju daerah bermedan magnet seragam 0,4 T. Arah medan magnet masuk bidang gambar (tanda ⊗) dan tegak lurus kecepatan partikel. Begitu memasuki daerah medan, lintasan partikel membelok ke atas akibat gaya Lorentz, seperti pada gambar.",f:"<svg viewBox=\"0 0 320 146\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"110\" y=\"20\" width=\"200\" height=\"118\" fill=\"#eef4ff\" stroke=\"#9db4d8\"/><circle cx=\"150\" cy=\"36\" r=\"7\" fill=\"none\" stroke=\"#2f6fb5\" stroke-width=\"1.5\"/><path d=\"M150,36 l8,8 m0,-8 l-8,8\" stroke=\"#2f6fb5\" stroke-width=\"1.5\" transform=\"translate(-4,-4)\"/><circle cx=\"150\" cy=\"76\" r=\"7\" fill=\"none\" stroke=\"#2f6fb5\" stroke-width=\"1.5\"/><path d=\"M150,76 l8,8 m0,-8 l-8,8\" stroke=\"#2f6fb5\" stroke-width=\"1.5\" transform=\"translate(-4,-4)\"/><circle cx=\"150\" cy=\"116\" r=\"7\" fill=\"none\" stroke=\"#2f6fb5\" stroke-width=\"1.5\"/><path d=\"M150,116 l8,8 m0,-8 l-8,8\" stroke=\"#2f6fb5\" stroke-width=\"1.5\" transform=\"translate(-4,-4)\"/><circle cx=\"210\" cy=\"36\" r=\"7\" fill=\"none\" stroke=\"#2f6fb5\" stroke-width=\"1.5\"/><path d=\"M210,36 l8,8 m0,-8 l-8,8\" stroke=\"#2f6fb5\" stroke-width=\"1.5\" transform=\"translate(-4,-4)\"/><circle cx=\"210\" cy=\"76\" r=\"7\" fill=\"none\" stroke=\"#2f6fb5\" stroke-width=\"1.5\"/><path d=\"M210,76 l8,8 m0,-8 l-8,8\" stroke=\"#2f6fb5\" stroke-width=\"1.5\" transform=\"translate(-4,-4)\"/><circle cx=\"210\" cy=\"116\" r=\"7\" fill=\"none\" stroke=\"#2f6fb5\" stroke-width=\"1.5\"/><path d=\"M210,116 l8,8 m0,-8 l-8,8\" stroke=\"#2f6fb5\" stroke-width=\"1.5\" transform=\"translate(-4,-4)\"/><circle cx=\"270\" cy=\"36\" r=\"7\" fill=\"none\" stroke=\"#2f6fb5\" stroke-width=\"1.5\"/><path d=\"M270,36 l8,8 m0,-8 l-8,8\" stroke=\"#2f6fb5\" stroke-width=\"1.5\" transform=\"translate(-4,-4)\"/><circle cx=\"270\" cy=\"76\" r=\"7\" fill=\"none\" stroke=\"#2f6fb5\" stroke-width=\"1.5\"/><path d=\"M270,76 l8,8 m0,-8 l-8,8\" stroke=\"#2f6fb5\" stroke-width=\"1.5\" transform=\"translate(-4,-4)\"/><circle cx=\"270\" cy=\"116\" r=\"7\" fill=\"none\" stroke=\"#2f6fb5\" stroke-width=\"1.5\"/><path d=\"M270,116 l8,8 m0,-8 l-8,8\" stroke=\"#2f6fb5\" stroke-width=\"1.5\" transform=\"translate(-4,-4)\"/><circle cx=\"46\" cy=\"96\" r=\"8\" fill=\"#d6432f\"/><text x=\"46\" y=\"100\" font-size=\"12\" text-anchor=\"middle\" fill=\"#fff\" font-weight=\"700\" font-family=\"Segoe UI,Arial,sans-serif\">+</text><line x1=\"58\" y1=\"96\" x2=\"99\" y2=\"96\" stroke=\"#1b2133\" stroke-width=\"2.5\"/><polygon points=\"104.0,96.0 95.7,99.5 95.7,92.5\" fill=\"#1b2133\"/><text x=\"80\" y=\"88\" font-size=\"12\" text-anchor=\"middle\" fill=\"#1b2133\" font-weight=\"700\" font-family=\"Segoe UI,Arial,sans-serif\">v</text><path d=\"M110,96 Q175,96 215,48\" fill=\"none\" stroke=\"#d6432f\" stroke-width=\"2\" stroke-dasharray=\"5 3\"/><line x1=\"128\" y1=\"96\" x2=\"128\" y2=\"61\" stroke=\"#d97706\" stroke-width=\"3\"/><polygon points=\"128.0,56.0 131.5,64.3 124.5,64.3\" fill=\"#d97706\"/><text x=\"140\" y=\"64\" font-size=\"12\" text-anchor=\"start\" fill=\"#d97706\" font-weight=\"700\" font-family=\"Segoe UI,Arial,sans-serif\">F</text><text x=\"210\" y=\"10\" font-size=\"10.5\" text-anchor=\"middle\" fill=\"#2f6fb5\" font-weight=\"700\" font-family=\"Segoe UI,Arial,sans-serif\">B = 0,4 T (⊗ masuk bidang)</text><text x=\"46\" y=\"120\" font-size=\"10\" text-anchor=\"middle\" fill=\"#5e6680\" font-family=\"Segoe UI,Arial,sans-serif\">q = +2 μC</text></svg>"}],
+ ["k","Gaya Lorentz pada kawat berarus bernilai maksimum jika ...",["arus tegak lurus arah medan magnet","arus sejajar arah medan magnet","arus berlawanan arah dengan medan","kawat diam dan tanpa arus"],"F = BIL sin θ; maksimum pada θ = 90°, nol pada θ = 0° atau 180°."],
+ ["k","Kawat berarus ke kanan berada dalam medan magnet yang masuk bidang. Arah gaya Lorentz pada kawat adalah ...",["ke atas","ke bawah","ke kiri","keluar bidang"],"Kaidah tangan kanan (F = IL × B): ibu jari arus ke kanan, empat jari arah medan masuk bidang, telapak tangan mendorong ke atas."]
+]],
+["Gaya Antara Dua Kawat Sejajar",[
+ ["h","Dua kawat sejajar berjarak 10 cm dialiri arus 5 A dan 10 A. Gaya per satuan panjang antara kedua kawat adalah ...",["1 × 10⁻⁴ N/m","1 × 10⁻⁵ N/m","5 × 10⁻⁵ N/m","2 × 10⁻⁴ N/m"],"F/L = μ₀I₁I₂/(2πa) = (2×10⁻⁷)(5)(10)/(0,1) = 1×10⁻⁴ N/m."],
+ ["h","Dua kawat sejajar masing-masing dialiri arus 10 A, berjarak 5 cm. Gaya pada kawat sepanjang 1,5 m adalah ...",["6 × 10⁻⁴ N","3 × 10⁻⁴ N","1,2 × 10⁻³ N","6 × 10⁻⁵ N"],"F = μ₀I₁I₂L/(2πa) = (2×10⁻⁷)(10)(10)(1,5)/(0,05) = 6×10⁻⁴ N."],
+ ["h","Dua kawat sejajar berarus 2 A dan 10 A mengalami gaya 4 × 10⁻⁵ N tiap meter. Tentukan setiap pernyataan berikut benar atau salah.",["Jarak antara kedua kawat adalah 10 cm.","Jika kedua arus searah, kedua kawat saling tolak-menolak.","Jika jarak kedua kawat dijadikan 20 cm, gaya per satuan panjang menjadi 2 × 10⁻⁵ N/m."],"a = μ₀I₁I₂/(2π·F/L) = (2×10⁻⁷)(20)/(4×10⁻⁵) = 0,1 m (Benar). Arus searah → tarik-menarik (Salah). F/L ∝ 1/a, jarak 2 kali → ½ kali = 2×10⁻⁵ N/m (Benar).",{m:"b",c:[true,false,true],n:"Dua kawat lurus panjang dipasang sejajar dan tegak, dialiri arus berlawanan arah masing-masing 2 A dan 10 A. Dengan neraca gaya, kedua kawat teramati saling menjauh (tolak-menolak) dengan gaya 4 × 10⁻⁵ N untuk setiap meter panjang kawat. Jarak antarkawat (a) belum diketahui dan harus dicari dari data tersebut.",f:"<svg viewBox=\"0 0 320 148\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"106\" y=\"14\" width=\"8\" height=\"112\" fill=\"#c9cfdc\"/><rect x=\"206\" y=\"14\" width=\"8\" height=\"112\" fill=\"#c9cfdc\"/><line x1=\"110\" y1=\"100\" x2=\"110\" y2=\"39\" stroke=\"#2f6fb5\" stroke-width=\"3\"/><polygon points=\"110.0,34.0 113.5,42.3 106.5,42.3\" fill=\"#2f6fb5\"/><line x1=\"210\" y1=\"34\" x2=\"210\" y2=\"95\" stroke=\"#2f6fb5\" stroke-width=\"3\"/><polygon points=\"210.0,100.0 206.5,91.7 213.5,91.7\" fill=\"#2f6fb5\"/><text x=\"110\" y=\"140\" font-size=\"11\" text-anchor=\"middle\" fill=\"#2f6fb5\" font-weight=\"700\" font-family=\"Segoe UI,Arial,sans-serif\">I₁ = 2 A</text><text x=\"210\" y=\"140\" font-size=\"11\" text-anchor=\"middle\" fill=\"#2f6fb5\" font-weight=\"700\" font-family=\"Segoe UI,Arial,sans-serif\">I₂ = 10 A</text><line x1=\"100\" y1=\"70\" x2=\"61\" y2=\"70\" stroke=\"#d6432f\" stroke-width=\"3\"/><polygon points=\"56.0,70.0 64.3,66.5 64.3,73.5\" fill=\"#d6432f\"/><line x1=\"220\" y1=\"70\" x2=\"259\" y2=\"70\" stroke=\"#d6432f\" stroke-width=\"3\"/><polygon points=\"264.0,70.0 255.7,73.5 255.7,66.5\" fill=\"#d6432f\"/><text x=\"52\" y=\"62\" font-size=\"12\" text-anchor=\"end\" fill=\"#d6432f\" font-weight=\"700\" font-family=\"Segoe UI,Arial,sans-serif\">F</text><text x=\"268\" y=\"62\" font-size=\"12\" text-anchor=\"start\" fill=\"#d6432f\" font-weight=\"700\" font-family=\"Segoe UI,Arial,sans-serif\">F</text><line x1=\"110\" y1=\"112\" x2=\"210\" y2=\"112\" stroke=\"#1b2133\"/><line x1=\"110\" y1=\"107\" x2=\"110\" y2=\"117\" stroke=\"#1b2133\"/><line x1=\"210\" y1=\"107\" x2=\"210\" y2=\"117\" stroke=\"#1b2133\"/><text x=\"160\" y=\"108\" font-size=\"11\" text-anchor=\"middle\" fill=\"#1b2133\" font-weight=\"700\" font-family=\"Segoe UI,Arial,sans-serif\">a = ?</text></svg>"}],
+ ["k","Dua kawat sejajar dialiri arus searah. Kedua kawat akan ..., dan bila arus salah satu dibalik, keduanya menjadi ...",["tarik-menarik; tolak-menolak","tolak-menolak; tarik-menarik","tarik-menarik; tetap tarik-menarik","tolak-menolak; tetap tolak-menolak"],"Arus searah → tarik-menarik; arus berlawanan arah → tolak-menolak."],
+ ["k","Dua kawat sejajar berarus I₁ dan I₂ (I₁ ≠ I₂). Gaya yang dialami kawat 1 akibat kawat 2 dibandingkan gaya pada kawat 2 akibat kawat 1 adalah ...",["sama besar dan berlawanan arah","lebih besar pada kawat berarus besar","lebih besar pada kawat berarus kecil","sama besar dan searah"],"Pasangan gaya aksi-reaksi (Hukum III Newton): besar sama, arah berlawanan, apa pun nilai arusnya."],
+ ["k","Jarak antara dua kawat sejajar berarus diperbesar menjadi dua kali, arus tetap. Gaya per satuan panjang menjadi ...",["½ kali semula","2 kali semula","¼ kali semula","tetap"],"F/L ∝ 1/a, sehingga a dua kali membuat F/L menjadi ½ kali."]
+]]
+];
+
+/* ===== STATE ===== */
+var PW = 866809986; // hash password pembahasan guru
+var Q=[], ans=[], ord=[], cur=0, left=0, tmr=null, t0=0, hasil=null, nama="", kelas="", unlocked=false;
+S.forEach(function(sg,si){sg[1].forEach(function(q){var x=q[4]||{};Q.push({s:si,t:q[0],q:q[1],o:q[2],e:q[3],m:x.m||"p",c:x.c,n:x.n,f:x.f});});});
+var $=function(i){return document.getElementById(i)};
+var L="ABCD";
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function pad(n){return (n<10?"0":"")+n}
+function mmss(s){return pad(Math.floor(s/60))+":"+pad(s%60)}
+function hs(s){var x=5381;for(var i=0;i<s.length;i++)x=((x<<5)+x+s.charCodeAt(i))|0;return x;}
+function done(i){var q=Q[i],a=ans[i];return q.m=="p"?a>=0:q.m=="c"?a.length>0:a.every(function(v){return v!==null});}
+function ok(i){var q=Q[i],a=ans[i];
+  if(q.m=="p")return a>=0&&ord[i][a]===0;
+  if(q.m=="c")return a.map(function(k){return ord[i][k]}).sort().join()===q.c.slice().sort().join();
+  return a.every(function(v,k){return v===q.c[k]});}
+function aTxt(i){var q=Q[i],a=ans[i];
+  if(q.m=="p")return a>=0?L[a]+". "+q.o[ord[i][a]]:"tidak dijawab";
+  if(q.m=="c")return a.length?a.slice().sort().map(function(k){return L[k]+". "+q.o[ord[i][k]]}).join("; "):"tidak dijawab";
+  return a.map(function(v,k){return (k+1)+"="+(v===null?"-":v?"Benar":"Salah")}).join(", ");}
+function kTxt(i){var q=Q[i];
+  if(q.m=="p")return L[ord[i].indexOf(0)]+". "+q.o[0];
+  if(q.m=="c")return q.c.map(function(oi){var k=ord[i].indexOf(oi);return L[k]+". "+q.o[oi]}).sort().join("; ");
+  return q.c.map(function(v,k){return (k+1)+"="+(v?"Benar":"Salah")}).join(", ");}
+function kode(i){var q=Q[i],a=ans[i];
+  var c=q.m=="p"?(a>=0?L[a]:"-"):q.m=="c"?(a.length?a.slice().sort().map(function(k){return L[k]}).join(""):"-"):a.map(function(v){return v===null?"-":v?"B":"S"}).join("");
+  return (i+1)+":"+c+(ok(i)?"✓":"✗");}
+
+$("durTxt").textContent=DURASI_MENIT;
+$("segList").innerHTML=S.map(function(s){return "<span>"+s[0]+" ("+s[1].length+")</span>"}).join("");
+
+/* ===== MULAI ===== */
+$("bStart").onclick=function(){
+  nama=$("iNama").value.trim(); kelas=$("iKelas").value.trim();
+  if(!nama||!kelas){alert("Isi nama dan kelas terlebih dahulu.");return;}
+  Q.forEach(function(q,i){
+    ans[i]=q.m=="p"?-1:q.m=="c"?[]:q.c.map(function(){return null});
+    ord[i]=q.m=="b"?q.o.map(function(_,k){return k}):shuffle([0,1,2,3]);
+  });
+  cur=0; left=DURASI_MENIT*60; t0=Date.now();
+  $("sStart").hidden=true; $("sQuiz").hidden=false;
+  $("cName").hidden=$("cProg").hidden=$("cTime").hidden=false;
+  $("cName").textContent=nama+" · "+kelas;
+  window.onbeforeunload=function(){return "Kuis sedang berlangsung."};
+  tmr=setInterval(function(){
+    left--; $("cTime").textContent="⏱ "+mmss(Math.max(left,0));
+    $("cTime").className="chip"+(left<=300?" warn":"");
+    if(left<=0){clearInterval(tmr);alert("Waktu habis. Jawabanmu dikumpulkan otomatis.");selesai();}
+  },1000);
+  $("cTime").textContent="⏱ "+mmss(left);
+  render();
+};
+
+/* ===== TAMPILAN SOAL ===== */
+function render(){
+  var q=Q[cur],a=ans[cur],o=$("qOpts"),h="";
+  $("qSeg").textContent="Submateri "+(q.s+1)+": "+S[q.s][0];
+  $("qTp").textContent=q.t=="h"?"Hitungan":"Konsep";
+  $("qTka").hidden=q.m=="p"; $("qTka").textContent=q.m=="c"?"Model TKA · PG kompleks":"Model TKA · Benar/Salah";
+  $("qNo").textContent="Soal "+(cur+1)+" dari "+Q.length;
+  $("qStim").innerHTML=(q.n?"<div class='narr'>"+q.n+"</div>":"")+(q.f?"<div class='fig'>"+q.f+"</div>":"");
+  $("qStem").innerHTML=q.q+(q.m=="c"?" <i style='color:var(--acd)'>(Pilih "+q.c.length+" jawaban)</i>":"");
+  if(q.m=="b"){
+    h="<table><tr><th>Pernyataan</th><th class='c'>Benar</th><th class='c'>Salah</th></tr>";
+    q.o.forEach(function(st,k){h+="<tr><td>"+(k+1)+". "+st+"</td>"+[true,false].map(function(v){return "<td class='c'><button class='tf"+(a[k]===v?" sel":"")+"' data-k='"+k+"' data-v='"+v+"'>"+(v?"B":"S")+"</button></td>"}).join("")+"</tr>";});
+    o.innerHTML=h+"</table>";
+    [].forEach.call(o.querySelectorAll(".tf"),function(b){b.onclick=function(){ans[cur][+b.dataset.k]=b.dataset.v=="true";render();};});
+  }else{
+    o.innerHTML=ord[cur].map(function(oi,k){
+      var on=q.m=="c"?a.indexOf(k)>=0:a===k;
+      return '<button class="opt'+(on?" sel":"")+(q.m=="c"?" mk":"")+'" data-k="'+k+'"><i>'+L[k]+'</i><span>'+q.o[oi]+'</span></button>';
+    }).join("");
+    [].forEach.call(o.children,function(b){b.onclick=function(){
+      var k=+b.dataset.k;
+      if(q.m=="c"){var x=ans[cur].indexOf(k);if(x>=0)ans[cur].splice(x,1);else ans[cur].push(k);}else ans[cur]=k;
+      render();};});
+  }
+  $("bPrev").disabled=cur===0;
+  $("bNext").hidden=cur===Q.length-1; $("bFin").hidden=cur!==Q.length-1;
+  var dn=0;Q.forEach(function(_,i){if(done(i))dn++;});
+  $("cProg").textContent="Terjawab "+dn+"/"+Q.length;
+  var g="",no=0;
+  S.forEach(function(sg){
+    g+="<h4>"+sg[0]+"</h4><div class='grid'>";
+    sg[1].forEach(function(){var i=no++;g+="<button class='tile"+(done(i)?" ans":"")+(i===cur?" cur":"")+"' data-i='"+i+"'>"+(i+1)+"</button>";});
+    g+="</div>";
+  });
+  $("side").innerHTML=g;
+  [].forEach.call($("side").querySelectorAll(".tile"),function(b){b.onclick=function(){cur=+b.dataset.i;render();window.scrollTo(0,0);};});
+}
+$("bPrev").onclick=function(){if(cur>0){cur--;render();}};
+$("bNext").onclick=function(){if(cur<Q.length-1){cur++;render();}};
+function konfirmasi(){
+  var kosong=0;Q.forEach(function(_,i){if(!done(i))kosong++;});
+  var m=kosong?("Masih ada "+kosong+" soal belum dijawab. Yakin ingin mengumpulkan?"):"Kumpulkan jawaban sekarang?";
+  if(confirm(m))selesai();
+}
+$("bFin").onclick=$("bFin2").onclick=konfirmasi;
+
+/* ===== PENILAIAN ===== */
+function selesai(){
+  clearInterval(tmr); window.onbeforeunload=null;
+  var dur=Math.min(Math.round((Date.now()-t0)/1000),DURASI_MENIT*60);
+  var seg=S.map(function(s){return{nama:s[0],benar:0,jumlah:s[1].length};});
+  var h={b:0,j:0},k={b:0,j:0},benar=0,kd=[];
+  Q.forEach(function(q,i){
+    var g=q.t=="h"?h:k; g.j++;
+    if(ok(i)){benar++;seg[q.s].benar++;g.b++;}
+    kd.push(kode(i));
+  });
+  seg.forEach(function(s){s.skor=Math.round(s.benar/s.jumlah*1000)/10;});
+  var total=Math.round(benar/Q.length*1000)/10;
+  hasil={nama:nama,kelas:kelas,tanggal:new Date().toLocaleString("id-ID"),durasi:mmss(dur),benar:benar,jumlah:Q.length,total:total,
+    hitung:{benar:h.b,jumlah:h.j,skor:Math.round(h.b/h.j*1000)/10},konsep:{benar:k.b,jumlah:k.j,skor:Math.round(k.b/k.j*1000)/10},
+    segmen:seg,jawaban:kd.join(" ")};
+  tampil();
+}
+function tampil(){
+  var r=hasil;
+  $("sQuiz").hidden=true;$("sRes").hidden=false;
+  ["cProg","cTime"].forEach(function(i){$(i).hidden=true;});
+  $("rTot").textContent=r.total;
+  $("rMsg").textContent="Skor total (benar "+r.benar+" dari "+r.jumlah+" soal)"+(r.total>=80?" · Luar biasa!":r.total>=60?" · Bagus, terus tingkatkan!":" · Ayo pelajari lagi, kamu pasti bisa!");
+  $("rId").innerHTML="<b>"+esc(r.nama)+"</b> · Kelas "+esc(r.kelas)+" · "+r.tanggal+" · Waktu pengerjaan "+r.durasi;
+  var t="<tr><th>Submateri</th><th class='c'>Benar</th><th class='c'>Skor</th><th></th></tr>";
+  r.segmen.forEach(function(s){t+="<tr><td>"+s.nama+"</td><td class='c'>"+s.benar+" / "+s.jumlah+"</td><td class='c'><b>"+s.skor+"</b></td><td><div class='bar'><b style='width:"+s.skor+"%'></b></div></td></tr>";});
+  t+="<tr class='tot'><td>SKOR TOTAL</td><td class='c'>"+r.benar+" / "+r.jumlah+"</td><td class='c'>"+r.total+"</td><td></td></tr>";
+  t+="<tr><td>Soal hitungan</td><td class='c'>"+r.hitung.benar+" / "+r.hitung.jumlah+"</td><td class='c'>"+r.hitung.skor+"</td><td></td></tr>";
+  t+="<tr><td>Soal konsep</td><td class='c'>"+r.konsep.benar+" / "+r.konsep.jumlah+"</td><td class='c'>"+r.konsep.skor+"</td><td></td></tr>";
+  $("rTab").innerHTML=t;
+  window.scrollTo(0,0);
+}
+function buildRv(){
+  $("rv").innerHTML=Q.map(function(q,i){
+    var o=ok(i);
+    return "<div class='rv "+(o?"ok":"no")+"'><b>"+(i+1)+".</b> "+q.q+(q.m=="b"?"<br>"+q.o.map(function(x,k){return (k+1)+") "+x}).join("<br>"):"")+"<br>Jawaban siswa: <b>"+aTxt(i)+"</b> "+(o?"✓":"✗")+(o?"":"<br>Kunci: <b>"+kTxt(i)+"</b>")+"<div class='e'>"+q.e+"</div></div>";
+  }).join("");
+}
+function esc(s){return s.replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+
+/* ===== UNDUH & SERAHKAN ===== */
+function teks(){
+  var r=hasil,t="REKAP KUIS KEMAGNETAN\n=====================\nNama   : "+r.nama+"\nKelas  : "+r.kelas+"\nTanggal: "+r.tanggal+"\nWaktu  : "+r.durasi+"\n\nSKOR PER SUBMATERI\n";
+  r.segmen.forEach(function(s,i){t+=(i+1)+". "+s.nama+": "+s.benar+"/"+s.jumlah+" → skor "+s.skor+"\n";});
+  t+="\nSoal hitungan: "+r.hitung.benar+"/"+r.hitung.jumlah+" → "+r.hitung.skor+"\nSoal konsep  : "+r.konsep.benar+"/"+r.konsep.jumlah+" → "+r.konsep.skor+"\n\nSKOR TOTAL: "+r.total+" (benar "+r.benar+" dari "+r.jumlah+")\n\nJawaban: "+r.jawaban+"\n";
+  return t;
+}
+function pesan(m,ok){var e=$("msg");e.hidden=false;e.textContent=m;e.style.background=ok?"var(--oks)":"var(--panel)";}
+$("bPdf").onclick=function(){$("rvBox").hidden=true;window.print();};
+$("bTxt").onclick=function(){
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([teks()],{type:"text/plain;charset=utf-8"}));
+  a.download="Rekap_Kuis_Kemagnetan_"+(hasil.nama.replace(/[^a-z0-9]+/gi,"_")||"siswa")+".txt";
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+};
+$("btnrv").onclick=function(){
+  var b=$("rvBox");
+  if(!unlocked){
+    var p=prompt("Pembahasan khusus guru. Masukkan password:");
+    if(p===null)return;
+    if(hs(p.trim())!==PW){alert("Password salah.");return;}
+    unlocked=true;buildRv();
+  }
+  b.hidden=!b.hidden;this.textContent=b.hidden?"🔒 Pembahasan (Guru)":"Sembunyikan Pembahasan";
+};
+$("bSend").onclick=function(){
+  if(!GAS_URL){pesan("Tautan pengiriman belum diatur guru. Unduh rekap (PDF atau .txt) lalu kirim ke guru melalui Google Classroom/WhatsApp sesuai arahan.");return;}
+  var b=this;b.disabled=true;pesan("Mengirim ...");
+  fetch(GAS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(hasil)})
+  .then(function(){pesan("✓ Hasil terkirim ke guru. Tetap simpan rekap PDF-mu sebagai cadangan.",true);})
+  .catch(function(){b.disabled=false;pesan("Gagal mengirim. Periksa sinyal, lalu coba lagi atau unduh rekap dan kirim manual.");});
+};
+</script>
+</body>
+</html>
