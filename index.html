@@ -103,7 +103,7 @@ h2{font-size:20px}h3{font-size:15px}p{font-size:13.5px;margin-bottom:8px}.rule{f
     <li>Soal bergaya TKA: <b>pilihan ganda kompleks</b> (pilih lebih dari satu jawaban) dan <b>pernyataan Benar/Salah</b>. Soal ini dinilai benar bila <b>semua</b> pilihan tepat.</li>
     <li>Pada soal biasa, pilih satu jawaban; kamu bisa berpindah soal dan mengubah jawaban sebelum menekan <b>Selesai</b>.</li>
     <li>Gunakan μ₀ = 4π × 10⁻⁷ T·m/A. Kerjakan hitungan di kertas coret-coretan.</li>
-    <li>Setelah selesai, kamu mendapat rekap skor per submateri dan total, yang bisa diunduh dan diserahkan ke guru. Pembahasan soal khusus untuk guru.</li>
+    <li>Setelah selesai, kamu mendapat rekap skor per submateri dan total, yang diunduh sebagai <b>gambar (PNG)</b> berwatermark nama dan kelasmu, lalu diserahkan ke guru melalui <b>Google Classroom</b>. Pembahasan soal khusus untuk guru.</li>
   </ul></div>
   <button class="btn" id="bStart">Mulai Kuis</button>
 </section>
@@ -134,9 +134,8 @@ h2{font-size:20px}h3{font-size:15px}p{font-size:13.5px;margin-bottom:8px}.rule{f
     <p id="rId" style="text-align:center"></p>
     <table id="rTab"></table>
     <div class="acts">
-      <button class="btn" id="bPdf">⬇ Unduh Rekap (PDF)</button>
-      <button class="btn g" id="bTxt">⬇ Unduh (.txt)</button>
-      <button class="btn ok" id="bSend">📤 Serahkan ke Guru</button>
+      <button class="btn" id="bImg">⬇ Unduh Rekap (Gambar)</button>
+      <button class="btn ok" id="bSend">📤 Kirim Otomatis ke Guru</button>
       <button class="btn g" id="btnrv">🔒 Pembahasan (Guru)</button>
     </div>
     <div id="msg" hidden></div>
@@ -342,19 +341,85 @@ function buildRv(){
 function esc(s){return s.replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 
 /* ===== UNDUH & SERAHKAN ===== */
-function teks(){
-  var r=hasil,t="REKAP KUIS KEMAGNETAN\n=====================\nNama   : "+r.nama+"\nKelas  : "+r.kelas+"\nTanggal: "+r.tanggal+"\nWaktu  : "+r.durasi+"\n\nSKOR PER SUBMATERI\n";
-  r.segmen.forEach(function(s,i){t+=(i+1)+". "+s.nama+": "+s.benar+"/"+s.jumlah+" → skor "+s.skor+"\n";});
-  t+="\nSoal hitungan: "+r.hitung.benar+"/"+r.hitung.jumlah+" → "+r.hitung.skor+"\nSoal konsep  : "+r.konsep.benar+"/"+r.konsep.jumlah+" → "+r.konsep.skor+"\n\nSKOR TOTAL: "+r.total+" (benar "+r.benar+" dari "+r.jumlah+")\n\nJawaban: "+r.jawaban+"\n";
-  return t;
-}
 function pesan(m,ok){var e=$("msg");e.hidden=false;e.textContent=m;e.style.background=ok?"var(--oks)":"var(--panel)";}
-$("bPdf").onclick=function(){$("rvBox").hidden=true;window.print();};
-$("bTxt").onclick=function(){
-  var a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([teks()],{type:"text/plain;charset=utf-8"}));
-  a.download="Rekap_Kuis_Kemagnetan_"+(hasil.nama.replace(/[^a-z0-9]+/gi,"_")||"siswa")+".txt";
-  document.body.appendChild(a);a.click();document.body.removeChild(a);
+/* ===== REKAP GAMBAR BERWATERMARK ===== */
+function kodeRekap(r){
+  var x=5381,str=r.nama+"|"+r.kelas+"|"+r.tanggal+"|"+r.durasi+"|"+r.total+"|"+r.jawaban;
+  for(var i=0;i<str.length;i++)x=((x<<5)+x+str.charCodeAt(i))|0;
+  var y=7919;for(var j=str.length-1;j>=0;j--)y=((y<<5)-y+str.charCodeAt(j)*31)|0;
+  return (Math.abs(x).toString(36)+Math.abs(y).toString(36)).toUpperCase().slice(0,10);
+}
+function rrect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+function fit(c,t,w){while(c.measureText(t).width>w&&t.length>1)t=t.slice(0,-2)+"…";return t;}
+function gambarRekap(){
+  var r=hasil,W=1080,F='"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif';
+  var rows=r.segmen.map(function(g){return[g.nama,g.benar+" / "+g.jumlah,g.skor,false];});
+  rows.push(["SKOR TOTAL",r.benar+" / "+r.jumlah,r.total,true]);
+  rows.push(["Soal hitungan",r.hitung.benar+" / "+r.hitung.jumlah,r.hitung.skor,false]);
+  rows.push(["Soal konsep",r.konsep.benar+" / "+r.konsep.jumlah,r.konsep.skor,false]);
+  var RH=58,top=470,H=top+rows.length*RH+210;
+  var cv=document.createElement("canvas");cv.width=W;cv.height=H;
+  var c=cv.getContext("2d");
+  c.fillStyle="#fff";c.fillRect(0,0,W,H);
+  // header
+  var g=c.createLinearGradient(0,0,W,0);g.addColorStop(0,"#a85a04");g.addColorStop(1,"#d97706");
+  c.fillStyle=g;c.fillRect(0,0,W,120);
+  c.fillStyle="#fff";c.textBaseline="alphabetic";
+  c.font="600 24px "+F;c.fillText("Lab Maya · Fisika Kelas XII",48,46);
+  c.font="800 44px "+F;c.fillText("Rekap Kuis Kemagnetan",48,96);
+  // identitas
+  c.fillStyle="#1b2133";c.font="800 38px "+F;c.fillText(fit(c,r.nama,W-96),48,184);
+  c.fillStyle="#5e6680";c.font="600 26px "+F;
+  c.fillText("Kelas "+r.kelas+"  ·  "+r.tanggal,48,228);
+  c.fillText("Waktu pengerjaan "+r.durasi,48,266);
+  // skor besar
+  rrect(c,48,296,W-96,150,22);c.fillStyle="#fff6e5";c.fill();c.strokeStyle="#d97706";c.lineWidth=3;c.stroke();
+  c.textAlign="center";c.fillStyle="#a85a04";c.font="800 96px "+F;c.fillText(String(r.total),W/2,392);
+  c.fillStyle="#5e6680";c.font="600 24px "+F;c.fillText("Skor total (benar "+r.benar+" dari "+r.jumlah+" soal)",W/2,430);
+  c.textAlign="left";
+  // tabel
+  c.fillStyle="#eef1f8";c.fillRect(48,top-6,W-96,40);
+  c.fillStyle="#5e6680";c.font="700 20px "+F;c.fillText("SUBMATERI",62,top+22);
+  c.textAlign="center";c.fillText("BENAR",640,top+22);c.fillText("SKOR",760,top+22);c.textAlign="left";
+  rows.forEach(function(w,i){
+    var y=top+40+i*RH;
+    if(w[3]){c.fillStyle="rgba(217,119,6,.14)";c.fillRect(48,y,W-96,RH);}
+    c.strokeStyle="#dde2ee";c.lineWidth=1.5;c.beginPath();c.moveTo(48,y+RH);c.lineTo(W-48,y+RH);c.stroke();
+    c.fillStyle="#1b2133";c.font=(w[3]?"800 ":"500 ")+"24px "+F;c.fillText(fit(c,w[0],480),62,y+37);
+    c.textAlign="center";c.font=(w[3]?"800 ":"500 ")+"24px "+F;c.fillText(w[1],640,y+37);
+    c.font="800 26px "+F;c.fillText(String(w[2]),760,y+37);c.textAlign="left";
+    rrect(c,830,y+20,180,16,8);c.fillStyle="#eef1f8";c.fill();
+    if(w[2]>0){rrect(c,830,y+20,Math.max(16,180*w[2]/100),16,8);c.fillStyle="#1f9d6c";c.fill();}
+  });
+  // footer
+  var fy=top+40+rows.length*RH+36,kd=kodeRekap(r);
+  c.fillStyle="#5e6680";c.font="600 20px "+F;
+  c.fillText("Kode verifikasi: "+kd+"   ·   Diserahkan oleh: "+r.nama+" ("+r.kelas+")",48,fy);
+  c.font="500 17px ui-monospace,Menlo,Consolas,monospace";c.fillStyle="#8d95ad";
+  var js="Jawaban: "+r.jawaban,ln="",ly=fy+34;
+  js.split(" ").forEach(function(t){if(c.measureText(ln+" "+t).width>W-96){c.fillText(ln,48,ly);ly+=24;ln=t;}else ln=ln?ln+" "+t:t;});
+  c.fillText(ln,48,ly);
+  c.fillStyle="#8d95ad";c.font="500 16px "+F;c.fillText("© Mamat AanS · Lab Maya Fisika",48,H-22);
+  // watermark rapat berulang (menimpa seluruh konten)
+  var wm=(r.nama+" · "+r.kelas).toUpperCase();
+  c.save();c.translate(W/2,H/2);c.rotate(-Math.PI/7);
+  c.textAlign="center";c.textBaseline="middle";
+  var diag=Math.sqrt(W*W+H*H),step=118,k=0;
+  for(var y=-diag/2;y<diag/2;y+=step,k++){
+    c.font="800 34px "+F;c.fillStyle="rgba(27,33,51,.13)";
+    for(var x=-diag/2-(k%2)*260;x<diag/2;x+=520){c.fillText(wm,x,y);}
+    c.font="700 20px "+F;c.fillStyle="rgba(217,119,6,.20)";
+    for(var x2=-diag/2+130-(k%2)*260;x2<diag/2;x2+=520){c.fillText(r.tanggal+" · "+kd,x2,y+52);}
+  }
+  c.restore();
+  return cv;
+}
+$("bImg").onclick=function(){
+  var cv=gambarRekap(),fn="Rekap_Kuis_Kemagnetan_"+(hasil.nama.replace(/[^a-z0-9]+/gi,"_")||"siswa")+"_"+(hasil.kelas.replace(/[^a-z0-9]+/gi,"_")||"kelas")+".png";
+  function simpan(u,rev){var a=document.createElement("a");a.href=u;a.download=fn;document.body.appendChild(a);a.click();document.body.removeChild(a);if(rev)setTimeout(function(){URL.revokeObjectURL(u)},4000);
+    pesan("✓ Gambar rekap tersimpan ("+fn+"). Unggah gambar ini ke tugas di Google Classroom.",true);}
+  if(cv.toBlob)cv.toBlob(function(b){if(b)simpan(URL.createObjectURL(b),true);else simpan(cv.toDataURL("image/png"));},"image/png");
+  else simpan(cv.toDataURL("image/png"));
 };
 $("btnrv").onclick=function(){
   var b=$("rvBox");
@@ -367,11 +432,11 @@ $("btnrv").onclick=function(){
   b.hidden=!b.hidden;this.textContent=b.hidden?"🔒 Pembahasan (Guru)":"Sembunyikan Pembahasan";
 };
 $("bSend").onclick=function(){
-  if(!GAS_URL){pesan("Tautan pengiriman belum diatur guru. Unduh rekap (PDF atau .txt) lalu kirim ke guru melalui Google Classroom/WhatsApp sesuai arahan.");return;}
+  if(!GAS_URL){pesan("Tautan pengiriman belum diatur guru. Unduh rekap (gambar) lalu serahkan melalui Google Classroom sesuai arahan guru.");return;}
   var b=this;b.disabled=true;pesan("Mengirim ...");
   fetch(GAS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(hasil)})
-  .then(function(){pesan("✓ Hasil terkirim ke guru. Tetap simpan rekap PDF-mu sebagai cadangan.",true);})
-  .catch(function(){b.disabled=false;pesan("Gagal mengirim. Periksa sinyal, lalu coba lagi atau unduh rekap dan kirim manual.");});
+  .then(function(){pesan("✓ Hasil terkirim ke guru. Tetap simpan gambar rekapmu sebagai cadangan.",true);})
+  .catch(function(){b.disabled=false;pesan("Gagal mengirim. Periksa sinyal, lalu coba lagi atau unduh gambar rekap dan serahkan lewat Google Classroom.");});
 };
 </script>
 </body>
