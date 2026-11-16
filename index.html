@@ -71,6 +71,11 @@ h2{font-size:20px}h3{font-size:15px}p{font-size:13.5px;margin-bottom:8px}.rule{f
 .big .n{font-size:46px}table{font-size:12.5px}th,td{padding:6px 5px}
 .acts .btn{flex:1 1 45%;padding:10px 6px;font-size:13px}.btn{font-size:14px}
 }
+.qwrap{grid-template-columns:1fr}#sQuiz{padding-bottom:64px}
+#side{position:fixed;right:12px;bottom:68px;width:min(340px,calc(100vw - 24px));max-height:62vh;overflow:auto;z-index:30;margin:0;padding:12px;box-shadow:0 10px 34px rgba(20,30,60,.28);display:none}
+#side.open{display:block}
+#fab{position:fixed;right:14px;bottom:14px;z-index:31;border:0;border-radius:99px;padding:12px 18px;background:var(--ink);color:#fff;font:700 14px var(--f);box-shadow:0 6px 20px rgba(20,30,60,.35);cursor:pointer}
+#fab:hover{background:var(--acd)}
 @media print{header,.acts,#msg,#btnrv,.noprint{display:none!important}body{background:#fff}.card{border:0;padding:0}.rv{break-inside:avoid}}
 </style>
 </head>
@@ -118,6 +123,7 @@ h2{font-size:20px}h3{font-size:15px}p{font-size:13.5px;margin-bottom:8px}.rule{f
       </div>
     </div>
     <div class="card side" id="side"></div>
+  <button id="fab" type="button" aria-label="Tampilkan daftar nomor soal">☰ Nomor</button>
   </div>
   <div style="text-align:center"><button class="btn ok" id="bFin2">Selesai &amp; Kumpulkan</button></div>
 </section>
@@ -242,6 +248,12 @@ $("bStart").onclick=function(){
   render();
 };
 
+
+/* ===== TOMBOL MELAYANG DAFTAR NOMOR ===== */
+function closeNav(){$("side").classList.remove("open");$("fab").textContent="☰ Nomor";}
+$("fab").onclick=function(e){e.stopPropagation();var o=$("side").classList.toggle("open");this.textContent=o?"✕ Tutup":"☰ Nomor";};
+document.addEventListener("click",function(e){var sd=$("side");if(sd.classList.contains("open")&&!sd.contains(e.target))closeNav();});
+
 /* ===== TAMPILAN SOAL ===== */
 function render(){
   var q=Q[cur],a=ans[cur],o=$("qOpts"),h="";
@@ -277,7 +289,7 @@ function render(){
     g+="</div>";
   });
   $("side").innerHTML=g;
-  [].forEach.call($("side").querySelectorAll(".tile"),function(b){b.onclick=function(){cur=+b.dataset.i;render();window.scrollTo(0,0);};});
+  [].forEach.call($("side").querySelectorAll(".tile"),function(b){b.onclick=function(){cur=+b.dataset.i;render();closeNav();window.scrollTo(0,0);};});
 }
 $("bPrev").onclick=function(){if(cur>0){cur--;render();}};
 $("bNext").onclick=function(){if(cur<Q.length-1){cur++;render();}};
